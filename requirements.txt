@@ -3,6 +3,7 @@ langchain
 openai
 chromadb
 tiktoken
+deeplake
 PyPDF2
 pysqlite3-binary
 spacy==3.5.0
