@@ -73,7 +73,7 @@ def read_pdf_text(uploaded_file):
     
 
 def generate_response(doc_texts, openai_api_key, query_text):
-    
+    doc_texts = None
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1,openai_api_key=openai_api_key)
     
     # Split documents into chunks
@@ -136,7 +136,7 @@ st.set_page_config(page_title='Gforce Resume Assistant', layout='wide')
 st.title('Gforce Resume Assistant')
 
 # File upload
-uploaded_files = st.file_uploader('Please upload you resume(s)', type=['pdf','txt'], accept_multiple_files=True)
+# uploaded_files = st.file_uploader('Please upload you resume(s)', type=['pdf','txt'], accept_multiple_files=True)
 
 # Query text
 query_text = st.text_input('Enter your question:', placeholder='Select candidates based on experience and skills')
@@ -146,22 +146,24 @@ if "chat_placeholder" not in st.session_state.keys():
     st.session_state.chat_placeholder = []
 
 # Form input and query
-if st.button('Submit', key='submit_button'):
-    if openai_api_key.startswith('sk-'):
-        if uploaded_files and query_text:
-            # documents = [read_pdf_text(file) for file in uploaded_files]
-            documents = uploaded_files
-            with st.spinner('Chatbot is typing...'):
-                response = generate_response(documents, openai_api_key, query_text)
-                st.session_state.chat_placeholder.append({"role": "user", "content": query_text})
-                st.session_state.chat_placeholder.append({"role": "assistant", "content": response})
+# if st.button('Submit', key='submit_button'):
+uploaded_files = True
+if openai_api_key.startswith('sk-'):
+    if uploaded_files and query_text:
+        # documents = [read_pdf_text(file) for file in uploaded_files]
+        # documents = uploaded_files
+        with st.spinner('Chatbot is typing...'):
+            documents = None
+            response = generate_response(documents,openai_api_key, query_text)
+            st.session_state.chat_placeholder.append({"role": "user", "content": query_text})
+            st.session_state.chat_placeholder.append({"role": "assistant", "content": response})
 
-            # Update chat display
-            for message in st.session_state.chat_placeholder:
-                with st.chat_message(message["role"]):
-                    st.write(message["content"])
-        else:
-            st.warning("Please upload one or more PDF files and enter a question to start the conversation.")
+        # Update chat display
+        for message in st.session_state.chat_placeholder:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+    else:
+        st.warning("Please upload one or more PDF files and enter a question to start the conversation.")
 
 def clear_chat_history():
     st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
