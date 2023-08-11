@@ -24,6 +24,8 @@ from qdrant_client.http.models import PointStruct
 from langchain.agents import initialize_agent
 from langchain.vectorstores import Qdrant
 from zap import schedule_interview
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
 
 
 openai_api_key = st.secrets["OPENAI_API_KEY"]
@@ -62,17 +64,22 @@ def read_pdf_text(uploaded_file):
 
     return text
 
-def generate_response(doc_texts, openai_api_key, query_text):
 
+
+
+    
+
+def generate_response(doc_texts, openai_api_key, query_text):
+    
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.1,openai_api_key=openai_api_key)
     
     # Split documents into chunks
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    texts = text_splitter.create_documents(doc_texts)
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    # texts = text_splitter.create_documents(doc_texts)
     
     # Select embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    
+    texts = doc_texts
     # Create a vectorstore from documents
     db = Chroma.from_documents(texts, embeddings)
     # Create retriever interface
@@ -118,7 +125,7 @@ st.set_page_config(page_title='Gforce Resume Assistant', layout='wide')
 st.title('Gforce Resume Assistant')
 
 # File upload
-uploaded_files = st.file_uploader('Please upload you resume(s)', type=['pdf'], accept_multiple_files=True)
+uploaded_files = st.file_uploader('Please upload you resume(s)', type=['pdf','txt'], accept_multiple_files=True)
 
 # Query text
 query_text = st.text_input('Enter your question:', placeholder='Select candidates based on experience and skills')
@@ -131,7 +138,8 @@ if "chat_placeholder" not in st.session_state.keys():
 if st.button('Submit', key='submit_button'):
     if openai_api_key.startswith('sk-'):
         if uploaded_files and query_text:
-            documents = [read_pdf_text(file) for file in uploaded_files]
+            # documents = [read_pdf_text(file) for file in uploaded_files]
+            documents = uploaded_files
             with st.spinner('Chatbot is typing...'):
                 response = generate_response(documents, openai_api_key, query_text)
                 st.session_state.chat_placeholder.append({"role": "user", "content": query_text})
