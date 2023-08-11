@@ -32,6 +32,7 @@ from langchain.text_splitter import CharacterTextSplitter
 
 
 openai_api_key = st.secrets["OPENAI_API_KEY"]
+deeplake_key = st.secrets["ACTIVELOOP_TOKEN"]
 # QDRANT_COLLECTION ="resume"
 
 
@@ -87,7 +88,7 @@ def generate_response(doc_texts, openai_api_key, query_text):
     # db = Chroma.from_documents(texts, embeddings)
     # Create retriever interface
     # retriever = db.as_retriever(search_type="similarity")
-    db = DeepLake(dataset_path="hub://arjunsridhar9720/twitter-algorithm_45", read_only=True, embedding_function=embeddings)
+    db = DeepLake(dataset_path="hub://arjunsridhar9720/twitter-algorithm_45", token = deeplake_key,read_only=True, embedding_function=embeddings)
     retriever = db.as_retriever()
     retriever.search_kwargs['distance_metric'] = 'cos'
     retriever.search_kwargs['fetch_k'] = 100
