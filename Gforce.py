@@ -3,7 +3,10 @@ import datetime
 import os
 from os import environ
 import PyPDF2
+from langchain.vectorstores import DeepLake
 from langchain.agents import initialize_agent
+from langchain.chat_models import ChatOpenAI
+from langchain.chains import ConversationalRetrievalChain
 # from langchain.agents.agent_toolkits import ZapierToolkit
 # from langchain.utilities.zapier import ZapierNLAWrapper
 from langchain.llms import OpenAI
@@ -79,13 +82,21 @@ def generate_response(doc_texts, openai_api_key, query_text):
     
     # Select embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    texts = doc_texts
+    # texts = doc_texts
     # Create a vectorstore from documents
-    db = Chroma.from_documents(texts, embeddings)
+    # db = Chroma.from_documents(texts, embeddings)
     # Create retriever interface
-    retriever = db.as_retriever(search_type="similarity")
+    # retriever = db.as_retriever(search_type="similarity")
+    db = DeepLake(dataset_path="hub://arjunsridhar9720/twitter-algorithm_45", read_only=True, embedding_function=embeddings)
+    retriever = db.as_retriever()
+    retriever.search_kwargs['distance_metric'] = 'cos'
+    retriever.search_kwargs['fetch_k'] = 100
+    retriever.search_kwargs['maximal_marginal_relevance'] = True
+    retriever.search_kwargs['k'] = 10
+    model = ChatOpenAI(model='gpt-3.5-turbo') # switch to 'gpt-4'
+    qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
     #Bot memory
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     # custom_prompt_template = """You are a hiring manager's helpful assistant that reads multiple resumes of candidates and answers the hiring manager's questions related to the candidates,\
     #                     Do your best to answer the hiring manager's so that it helps them select candidates better\
     #                     Your goal is to aid the hiring in the candidate selection process.
@@ -105,7 +116,7 @@ def generate_response(doc_texts, openai_api_key, query_text):
     # prompt = PromptTemplate(template=custom_prompt_template,
     #                         input_variables=['context', 'question'])
     
-    docs = db.similarity_search(query_text)
+    # docs = db.similarity_search(query_text)
     #Create QA chain 
     qa =  RetrievalQA.from_chain_type(llm=llm,
                                        chain_type='stuff',
