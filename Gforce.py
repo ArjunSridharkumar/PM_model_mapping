@@ -4,8 +4,8 @@ import os
 from os import environ
 import PyPDF2
 from langchain.agents import initialize_agent
-from langchain.agents.agent_toolkits import ZapierToolkit
-from langchain.utilities.zapier import ZapierNLAWrapper
+# from langchain.agents.agent_toolkits import ZapierToolkit
+# from langchain.utilities.zapier import ZapierNLAWrapper
 from langchain.llms import OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
@@ -23,7 +23,7 @@ from qdrant_client import QdrantClient,models
 from qdrant_client.http.models import PointStruct
 from langchain.agents import initialize_agent
 from langchain.vectorstores import Qdrant
-from zap import schedule_interview
+# from zap import schedule_interview
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
 
