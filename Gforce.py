@@ -94,7 +94,7 @@ def generate_response(doc_texts, openai_api_key, query_text):
     retriever.search_kwargs['fetch_k'] = 100
     retriever.search_kwargs['maximal_marginal_relevance'] = True
     retriever.search_kwargs['k'] = 10
-    model = ChatOpenAI(model='gpt-3.5-turbo') # switch to 'gpt-4'
+    model = ChatOpenAI(model='gpt-4') # switch to 'gpt-4'
     qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
     #Bot memory
     # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
