@@ -76,7 +76,8 @@ def generate_response(doc_texts, openai_api_key, query_text):
     retriever.search_kwargs['maximal_marginal_relevance'] = True
     retriever.search_kwargs['k'] = 10
     model = ChatOpenAI(model='gpt-4') # switch to 'gpt-4'
-    qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    # qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
     # chain_type_kwargs = {"prompt": PROMPT}
     qa =  RetrievalQA.from_chain_type(llm=llm,
                                        chain_type='stuff',
@@ -129,7 +130,7 @@ if openai_api_key.startswith('sk-'):
 def clear_chat_history():
     st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
     st.session_state.chat_placeholder = []
-    uploaded_files.clear()
+    # uploaded_files.clear()
     query_text = ""
     st.empty()  # Clear the chat display
 
