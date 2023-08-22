@@ -48,21 +48,39 @@ def generate_response(doc_texts, openai_api_key, query_text):
     
     # Select embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    custom_prompt_template = """You are project planner. You will be given a codebase and will have to break it down into subtasks for teams to develop/
-    Plan out out each task and subtask step by step. Plan tasks only relevant to the provided document. Do not make up irrelevant tasks./
-    Be helpful and answer in detail while preferring to use information from provided documents.
+    custom_prompt_template = """
+    You are the scrum master/product manager of the codebase given to you. Consider each task/feature in the question and determine the possibility of implementing it on the current codebase.
+    If the possibility is less, then you say that such a feature cannot be implemented. If the feature can be implemented, then plan out each task and subtask step by step using the codebase. Please
+    depict the files and modules that are going to be changed. 
     Task: Prepare  in 3 paragraphs
     Topic: Project Planning
     Style: Technical
     Tone: Professional
     Audience: Project Manager
-
+    
     Context: {context}
     Question: {question}
 
     Only return the helpful answer below and nothing else.
     Helpful answer:
     """
+    
+    
+    # You are project planner. You will be given a codebase and will have to break it down into subtasks for teams to develop/
+    # Plan out out each task and subtask step by step. Plan tasks only relevant to the provided document. Do not make up irrelevant tasks./
+    # Be helpful and answer in detail while preferring to use information from provided documents.
+    # Task: Prepare  in 3 paragraphs
+    # Topic: Project Planning
+    # Style: Technical
+    # Tone: Professional
+    # Audience: Project Manager
+
+    # Context: {context}
+    # Question: {question}
+
+    # Only return the helpful answer below and nothing else.
+    # Helpful answer:
+    # """
     
     prompt = PromptTemplate(template=custom_prompt_template,
                             input_variables=['context', 'question'])
