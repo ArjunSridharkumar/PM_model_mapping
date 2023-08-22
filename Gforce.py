@@ -36,42 +36,6 @@ deeplake_key = st.secrets["ACTIVELOOP_TOKEN"]
 # QDRANT_COLLECTION ="resume"
 
 
-# client = QdrantClient(
-#     url="https://fd3fb6ff-e014-4338-81ce-7d6e9db358b3.eu-central-1-0.aws.cloud.qdrant.io:6333", 
-#     api_key=st.secrets["QDRANT_API_KEY"],
-# )
-
-# # Get a list of all existing collections
-# collections = client.get_collections()
-
-# # Check if the collection exists before attempting to clear its data
-# if QDRANT_COLLECTION in collections:
-#     # Delete the collection and all its data
-#     client.delete_collection(collection_name="QDRANT_COLLECTION")
-    
-# collection_config = qdrant_client.http.models.VectorParams(
-#         size=1536,
-#         distance=qdrant_client.http.models.Distance.COSINE
-#     )
-# client.recreate_collection(
-#    collection_name=QDRANT_COLLECTION,
-#     vectors_config=collection_config)
-
-
-
-def read_pdf_text(uploaded_file):
-    pdf_reader = PyPDF2.PdfReader(uploaded_file)
-    text = ""
-
-    for page in pdf_reader.pages:
-        text += page.extract_text()
-
-    return text
-
-
-
-
-    
 
 def generate_response(doc_texts, openai_api_key, query_text):
     doc_texts = None
@@ -96,29 +60,6 @@ def generate_response(doc_texts, openai_api_key, query_text):
     retriever.search_kwargs['k'] = 10
     model = ChatOpenAI(model='gpt-4') # switch to 'gpt-4'
     qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
-    #Bot memory
-    # memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    # custom_prompt_template = """You are a hiring manager's helpful assistant that reads multiple resumes of candidates and answers the hiring manager's questions related to the candidates,\
-    #                     Do your best to answer the hiring manager's so that it helps them select candidates better\
-    #                     Your goal is to aid the hiring in the candidate selection process.
-    #                     If you don't know the answer, just say that you don't know, don't try to make up an answer.\
-    #                     If you are asked to summarize a candidate'sresume, summarize it in 7 sentences, 3 sentences for their experience, 2 sentences projects, 1 sentence for their education and 1 sentence for their skills\
-    #                     If you are asked to compare certain candidates just provide the separate summarization of those candidate's resumes.\
-    #                     If you are asked for the candidate's email, provide them with the candidate's email along with the candidate's name\
-    #                     If you asked to select a candidates based on certain skills or experience then go through the resumes and find the candidates with the relevant skills or experience and provide the hiring manager with a list of those candidates/
-
-    # Context: {context}
-    # Question: {question}
-
-    # Only return the helpful answer below and nothing else.
-    # Helpful answer:
-    # """
-    
-    # prompt = PromptTemplate(template=custom_prompt_template,
-    #                         input_variables=['context', 'question'])
-    
-    # docs = db.similarity_search(query_text)
-    #Create QA chain 
     qa =  RetrievalQA.from_chain_type(llm=llm,
                                        chain_type='stuff',
                                        retriever=retriever,
