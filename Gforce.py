@@ -47,11 +47,27 @@ def generate_response(doc_texts, openai_api_key, query_text):
     
     # Select embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
-    # texts = doc_texts
-    # Create a vectorstore from documents
-    # db = Chroma.from_documents(texts, embeddings)
-    # Create retriever interface
-    # retriever = db.as_retriever(search_type="similarity")
+    custom_prompt_template = """You are project planner. You will be given a codebase and will have to break it down into subtasks for teams to develop/
+    Plan out out each task and subtask step by step. Plan tasks only relevant to the provided document. Do not make up irrelevant tasks./
+    Be helpful and answer in detail while preferring to use information from provided documents.
+    Task: Prepare  in 3 paragraphs
+    Topic: Project Planning
+    Style: Technical
+    Tone: Professional
+    Audience: Project Manager
+
+    Context: {context}
+    Question: {question}
+
+    Only return the helpful answer below and nothing else.
+    Helpful answer:
+    """
+    
+    prompt = PromptTemplate(template=custom_prompt_template,
+                            input_variables=['context', 'question'])
+
+
+    
     db = DeepLake(dataset_path="hub://arjunsridhar9720/twitter_clone_org", token = deeplake_key,read_only=True, embedding_function=embeddings)
     retriever = db.as_retriever()
     retriever.search_kwargs['distance_metric'] = 'cos'
@@ -60,13 +76,15 @@ def generate_response(doc_texts, openai_api_key, query_text):
     retriever.search_kwargs['k'] = 10
     model = ChatOpenAI(model='gpt-4') # switch to 'gpt-4'
     qa = ConversationalRetrievalChain.from_llm(model,retriever=retriever)
+    # chain_type_kwargs = {"prompt": PROMPT}
     qa =  RetrievalQA.from_chain_type(llm=llm,
                                        chain_type='stuff',
                                        retriever=retriever,
                                        return_source_documents=False,
-                                       # chain_type_kwargs={'prompt': prompt}
+                                       chain_type_kwargs={'prompt': prompt}
                                        )
     response = qa({'query': query_text})
+    print (response)
     return response["result"]
     
 # Store LLM generated responses
