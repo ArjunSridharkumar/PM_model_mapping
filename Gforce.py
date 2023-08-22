@@ -39,7 +39,7 @@ deeplake_key = st.secrets["ACTIVELOOP_TOKEN"]
 
 def generate_response(doc_texts, openai_api_key, query_text):
     doc_texts = None
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7,openai_api_key=openai_api_key)
+    llm = ChatOpenAI(model_name="gpt-4", temperature=0.4,openai_api_key=openai_api_key)
     
     # Split documents into chunks
     # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
