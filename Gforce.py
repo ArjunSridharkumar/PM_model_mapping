@@ -50,8 +50,11 @@ def generate_response(doc_texts, openai_api_key, query_text):
     embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
     custom_prompt_template = """
     You are the scrum master/product manager of the codebase given to you. Consider each task/feature in the question and determine the possibility of implementing it on the current codebase.
-    If the possibility is less, then you say that such a feature cannot be implemented. If the feature can be implemented, then plan out each task and subtask step by step using the codebase. Please
-    depict the files and modules that are going to be changed. 
+    If the possibility is less, then you say that such a feature cannot be implemented.
+    
+    
+    If the feature can be implemented, then consider the feature to be a user story in a JIRA board and plan out the tickets for the story using the codebase.
+    Ensure that you include the files and modules which are to be changed for each ticket.
     Task: Prepare  in 3 paragraphs
     Topic: Project Planning
     Style: Technical
