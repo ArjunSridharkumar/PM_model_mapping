@@ -69,7 +69,7 @@ def generate_response(doc_texts, openai_api_key, query_text):
 
 
     
-    db = DeepLake(dataset_path="hub://arjunsridhar9720/twitter_clone_org", token = deeplake_key,read_only=True, embedding_function=embeddings)
+    db = DeepLake(dataset_path="hub://arjunsridhar9720/sweep-codebase", token = deeplake_key,read_only=True, embedding_function=embeddings)
     retriever = db.as_retriever()
     retriever.search_kwargs['distance_metric'] = 'cos'
     retriever.search_kwargs['fetch_k'] = 100
